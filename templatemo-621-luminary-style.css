@@ -374,7 +374,7 @@ body.menu-open .top-nav { background: rgba(8,8,8,0.95); backdrop-filter: blur(20
 .feature-content {}
 .feature-number {
   font-size: 3rem; font-weight: 600; letter-spacing: -0.04em;
-  colour:var(--ivory); line-height: 1; margin-bottom: 12px;
+  color: var(--ivory); line-height: 1; margin-bottom: 12px;
   font-variant-numeric: tabular-nums;
 }
 
