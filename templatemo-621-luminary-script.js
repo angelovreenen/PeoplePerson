@@ -48,29 +48,30 @@ const heroEl = document.getElementById('hero');
 let gx = 0, gy = 0, tx = 0, ty = 0;
 let mouseInHero = false;
 
-document.addEventListener('mousemove', e => {
-  const heroRect = heroEl.getBoundingClientRect();
-  const gridRect = heroGrid.getBoundingClientRect();
-  const activeTop = heroRect.top + heroRect.height * 0.3;
-  // Only track in the bottom 70% of hero
-  if (e.clientY >= activeTop && e.clientY <= heroRect.bottom) {
-    mouseInHero = true;
-    tx = e.clientX - gridRect.left;
-    ty = e.clientY - gridRect.top;
-  } else {
-    mouseInHero = false;
-    tx = gridRect.width / 2;
-    ty = gridRect.height * 0.3;
-  }
-});
+if (heroGrid && heroEl) {
+  document.addEventListener('mousemove', e => {
+    const heroRect = heroEl.getBoundingClientRect();
+    const gridRect = heroGrid.getBoundingClientRect();
+    const activeTop = heroRect.top + heroRect.height * 0.3;
+    if (e.clientY >= activeTop && e.clientY <= heroRect.bottom) {
+      mouseInHero = true;
+      tx = e.clientX - gridRect.left;
+      ty = e.clientY - gridRect.top;
+    } else {
+      mouseInHero = false;
+      tx = gridRect.width / 2;
+      ty = gridRect.height * 0.3;
+    }
+  });
 
-(function lerpGrid() {
-  gx += (tx - gx) * 0.08;
-  gy += (ty - gy) * 0.08;
-  heroGrid.style.setProperty('--mx', gx + 'px');
-  heroGrid.style.setProperty('--my', gy + 'px');
-  requestAnimationFrame(lerpGrid);
-})();
+  (function lerpGrid() {
+    gx += (tx - gx) * 0.08;
+    gy += (ty - gy) * 0.08;
+    heroGrid.style.setProperty('--mx', gx + 'px');
+    heroGrid.style.setProperty('--my', gy + 'px');
+    requestAnimationFrame(lerpGrid);
+  })();
+}
 
 // ── Active nav + Side panels ──
 const navAnchors = document.querySelectorAll('.nav-links a');
@@ -109,12 +110,14 @@ updateNavAndPanels();
 
 // ── Mobile menu ──
 const toggle = document.getElementById('navToggle'), menu = document.getElementById('mobileMenu');
-const menuLinks = menu.querySelectorAll('.mobile-menu-link');
+const menuLinks = menu ? menu.querySelectorAll('.mobile-menu-link') : [];
 let menuOpen = false;
 function openMenu() { menuOpen=true; toggle.classList.add('active'); toggle.setAttribute('aria-expanded','true'); menu.classList.add('open'); document.body.classList.add('menu-open'); }
 function closeMenu() { if(!menuOpen) return; menuOpen=false; toggle.classList.remove('active'); toggle.setAttribute('aria-expanded','false'); menu.classList.remove('open'); document.body.classList.remove('menu-open'); }
-toggle.addEventListener('click', () => menuOpen ? closeMenu() : openMenu());
-menuLinks.forEach(l => l.addEventListener('click', closeMenu));
+if (toggle && menu) {
+  toggle.addEventListener('click', () => menuOpen ? closeMenu() : openMenu());
+  menuLinks.forEach(l => l.addEventListener('click', closeMenu));
+}
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
 window.addEventListener('resize', () => { if (innerWidth > 1024) closeMenu(); });
 
@@ -137,8 +140,10 @@ function setPricing() {
   monthlyOpts.forEach(el => el.classList.toggle('active', !annual));
   annualOpts.forEach(el => el.classList.toggle('active', annual));
 }
-pToggle.addEventListener('click', setPricing);
-pToggle.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setPricing(); } });
+if (pToggle) {
+  pToggle.addEventListener('click', setPricing);
+  pToggle.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setPricing(); } });
+}
 
 // ── FAQ accordion ──
 const faqItems = document.querySelectorAll('.faq-item');
@@ -152,7 +157,7 @@ document.querySelectorAll('.faq-question').forEach(btn => {
   });
 });
 
-faqToggleAll.addEventListener('click', () => {
+if (faqToggleAll) faqToggleAll.addEventListener('click', () => {
   allExpanded = !allExpanded;
   if (allExpanded) {
     // Staggered expand — slow cascade, each waits for the previous to start breathing
